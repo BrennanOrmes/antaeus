@@ -1,0 +1,25 @@
+Dev Diary - What is the purpose?
+    This will outline my general thought process and day to day (or night to night) activity of the development process
+    for this challenge.
+
+Tuesday 5th of April (1 hour)
+    Looked into the code to see how the structure works, and see if there is any similarities to what I have done before
+    with .NET Core
+
+    From what I can see so far, it is pretty similar to how I have set up API projects in Core. Which is useful since I
+    sort of know my way around now and can follow the code pretty easily.
+
+    Initial observations:
+    There is no use of automapper, or similar libraries, thus making the mapping of objects a little
+    tedious, but that is OK since doing it manually means less room for error.
+
+    From what I can see, there is no async code, or use of coroutines, which from my understanding of Kotlin is their
+    way of having async code (written mostly synchronously, which is pretty interesting)
+
+    I had some issues trying to run the docker file following the guide in the README, but I saw there was a bash,
+    so I ran that, and the API is running now.
+
+    My initial thoughts on how to tackle this challenge was thinking about how I would do it in C#. Typically, I would
+    make use of an external library like hangfire to set routine jobs to fire and forget. Hangfire has its own dashboard
+    built in, which is very useful if you are building API's with tools like swagger for API documentation.
+    The dashboard allows you to manually fire scheduled jobs and also queue them to be rescheduled if they have failed.
