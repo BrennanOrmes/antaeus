@@ -23,7 +23,7 @@ Tuesday 5th of April (1 hour)
     built in, which is very useful if you are building API's with tools like swagger for API documentation.
     The dashboard allows you to manually fire scheduled jobs and also queue them to be rescheduled if they have failed.
 
-Wednesday 6th of April
+Wednesday 6th of April (1 hour)
     From analyzing the challenge and code, some questions were raised:
 
     1. What do we do if the currency in the DB does not match our current set of constants? Since the column is a string,
