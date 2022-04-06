@@ -3,6 +3,8 @@ Dev Diary - What is the purpose?
     for this challenge.
 
 Tuesday 5th of April (1 hour)
+    I had set up a linux VM on virtual box to run and develop the code in an isolated environment.
+
     Looked into the code to see how the structure works, and see if there is any similarities to what I have done before
     with .NET Core
 
@@ -13,9 +15,6 @@ Tuesday 5th of April (1 hour)
     There is no use of automapper, or similar libraries, thus making the mapping of objects a little
     tedious, but that is OK since doing it manually means less room for error.
 
-    From what I can see, there is no async code, or use of coroutines, which from my understanding of Kotlin is their
-    way of having async code (written mostly synchronously, which is pretty interesting)
-
     I had some issues trying to run the docker file following the guide in the README, but I saw there was a bash,
     so I ran that, and the API is running now.
 
@@ -23,3 +22,27 @@ Tuesday 5th of April (1 hour)
     make use of an external library like hangfire to set routine jobs to fire and forget. Hangfire has its own dashboard
     built in, which is very useful if you are building API's with tools like swagger for API documentation.
     The dashboard allows you to manually fire scheduled jobs and also queue them to be rescheduled if they have failed.
+
+Wednesday 6th of April
+    From analyzing the challenge and code, some questions were raised:
+
+    1. What do we do if the currency in the DB does not match our current set of constants? Since the column is a string,
+    this can allow some error, or potentially the entry could be null or empty. I would have to write some exception
+    handling for this and add new invoice statuses to show if a currency error happened. I believe a new status
+    would have to get added for failed invoices (potential failure with payment provider, card expired etc).
+
+    2. Do we make the assumption that wherever the service is located, it will go by that services timezone to fire at
+    midnight?
+
+    3. What is the upper limit for retrying failed payments? 2 or 3?
+
+    4. What do we do if a customers currency does not match the currency for the invoice? I noticed there was an
+    exception for it. If that exception does happen, do we set the status to failed?
+
+    I started to look into potential libraries to use that offer similar functionality to hangfire, and one potential
+    candidate that I have found is JobRunr. JobRunr has its own dashboard that lets you see what jobs are running and
+    which ones have failed, this might prove useful since right now I am not sure if I will build a front end to show
+    a list of invoices.
+
+    I implemented a service method that takes a string then filters the results of the fetchAll by getting the Enum
+    value of InvoiceStatus.
