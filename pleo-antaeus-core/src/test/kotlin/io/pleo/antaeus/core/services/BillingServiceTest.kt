@@ -26,20 +26,26 @@ class BillingServiceTest {
     private val invoiceNetworkError = createInvoice()
 
     private val invoiceService = mockk<InvoiceService> {
-        every { updateInvoice(invoice.id, InvoiceStatus.PAID.toString()) } returns invoice
-        every { updateInvoice(invoice.id, InvoiceStatus.FAILED.toString()) } returns invoice
+        every { updateInvoice(
+            invoice.id, InvoiceStatus.PAID.toString())
+        } returns createInvoice(invoice.id, invoice.customerId, InvoiceStatus.PAID)
+
         every { updateInvoice(
             invoiceNotEnoughMoney.id, InvoiceStatus.FAILED.toString())
         } returns createInvoice(invoiceNotEnoughMoney.id, invoiceNotEnoughMoney.customerId, InvoiceStatus.FAILED)
+
         every { updateInvoice(
             invoiceCustomerNotFound.id, InvoiceStatus.FAILED.toString())
         } returns createInvoice(invoiceCustomerNotFound.id, invoiceCustomerNotFound.customerId, InvoiceStatus.FAILED)
+
         every { updateInvoice(
             invoiceCurrencyMismatch.id, InvoiceStatus.FAILED.toString())
         } returns createInvoice(invoiceCurrencyMismatch.id, invoiceCurrencyMismatch.customerId, InvoiceStatus.FAILED)
+
         every { updateInvoice(
             invoiceNetworkError.id, InvoiceStatus.PENDING.toString())
         } returns createInvoice(invoiceNetworkError.id, invoiceNetworkError.customerId, InvoiceStatus.PENDING)
+
         every { fetch(invoice.id) } returns invoice
         every { fetch(invoiceCustomerNotFound.id) } returns invoiceCustomerNotFound
         every { updateInvoice(invoiceNotFound.id, any()) }.throws(InvoiceNotFoundException(invoiceNotFound.id))
@@ -91,5 +97,17 @@ class BillingServiceTest {
     fun `will set invoice status to PENDING if network error`() {
         val updatedInvoice = billingService.chargeInvoice(invoiceNetworkError)
         assert(updatedInvoice.status == InvoiceStatus.PENDING)
+    }
+
+    @Test
+    fun `will set invoice status to FAILED if not enough funds`() {
+        val updatedInvoice = billingService.chargeInvoice(invoiceNotEnoughMoney)
+        assert(updatedInvoice.status == InvoiceStatus.FAILED)
+    }
+
+    @Test
+    fun `will set invoice status to PAID if enough funds`() {
+        val updatedInvoice = billingService.chargeInvoice(invoice)
+        assert(updatedInvoice.status == InvoiceStatus.PAID)
     }
 }
