@@ -46,3 +46,20 @@ Wednesday 6th of April (1 hour)
 
     I implemented a service method that takes a string then filters the results of the fetchAll by getting the Enum
     value of InvoiceStatus.
+
+Friday 8th of April (2 hours)
+    Spent some time reading about how to interact with entities from the database. I then used what I had learned to
+    implement a updateInvoiceStatus method. I chose to write a method that only updates the invoices' status, since
+    further improvements to the system would allow a customer to add adjustments to an invoice.
+
+    I could assume that invoices might be made in error, but from my limited knowledge of these systems, I
+    will assume that the invoice can just be marked as paid or a different status, and then a new invoice can be
+    created, with the correct values
+
+    With this method, I can update the status, and only the status, without accidentally making changes to other columns
+    in the database. I'd be curious to know if you can make a catch-all update method, that you can then provide the
+    body of the update query from the service layer into the dal. Something to note for further improvements.
+
+    I also added unit tests for the new service methods I have introduced. However, I had some difficulty for the
+    behaviour verification of my fetch by status method, since it would not let me return an explicit list of invoices.
+    Will need to do some further reading on the MockK library.
