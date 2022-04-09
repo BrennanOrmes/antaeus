@@ -14,7 +14,7 @@ class BillingService(
 ) {
 
     /**
-     * Charged invoice using [PaymentProvider]
+     * Charge invoice using [PaymentProvider]
      * @param invoice as [Invoice]
      * @return returns updated invoice as [Invoice]
      * @throws IllegalArgumentException
@@ -35,7 +35,7 @@ class BillingService(
             }
         } catch (exception: Exception) {
             when(exception) {
-                is CurrencyMismatchException, is CustomerNotFoundException -> {
+                is CustomerNotFoundException, is CurrencyMismatchException -> {
                     invoiceService.updateInvoice(invoice.id, InvoiceStatus.FAILED.toString())
                 } is NetworkException -> {
                     // if paymentProvider throws a network error, we will keep the invoice as pending

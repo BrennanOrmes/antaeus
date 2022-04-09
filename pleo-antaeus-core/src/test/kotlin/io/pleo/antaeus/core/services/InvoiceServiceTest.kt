@@ -17,12 +17,14 @@ class InvoiceServiceTest {
 //        every { fetchInvoice(404) } returns null
 //    }
 
+    private val pendingInvoice = createInvoice(InvoiceStatus.PENDING)
+
     private val invoiceService = mockk<InvoiceService> {
         every { fetch(404) }.throws(InvoiceNotFoundException(404))
         // Had some difficulty figuring out expected return of list, listOf seems like cheating?
         every { fetchAllByStatus(InvoiceStatus.PENDING.toString()) } returns listOf()
         every { fetchAllByStatus("blah") }.throws(IllegalArgumentException())
-        every { updateInvoice(any(), InvoiceStatus.PAID.toString()) } returns createInvoice(InvoiceStatus.PAID)
+        every { updateInvoice(createInvoice(InvoiceStatus.PENDING).id, InvoiceStatus.PAID.toString()) } returns createInvoice(InvoiceStatus.PAID)
     }
 
     private fun createInvoice(status: InvoiceStatus): Invoice {
@@ -33,8 +35,6 @@ class InvoiceServiceTest {
             status = status
         )
     }
-
-    private val pendingInvoice = createInvoice(InvoiceStatus.PENDING)
 
     @Test
     fun `will throw if invoice is not found`() {
