@@ -18,33 +18,23 @@ class BillingService(
      * @param invoice as [Invoice]
      * @return returns updated invoice as [Invoice]
      * @throws IllegalArgumentException
-     * @throws CurrencyMismatchException
-     * @throws NetworkException
-     * @throws CustomerNotFoundException
      * @throws InvoiceNotFoundException
      */
     fun chargeInvoice(invoice: Invoice): Invoice {
-        // throw not found exception if invoice does not exist.
-        invoiceService.fetch(invoice.id)
-
-        return try {
-            if(paymentProvider.charge(invoice)) {
-                invoiceService.updateInvoice(invoice.id, InvoiceStatus.PAID.toString())
+        val status: InvoiceStatus = try {
+            if (paymentProvider.charge(invoice)) {
+                InvoiceStatus.PAID
             } else {
-                invoiceService.updateInvoice(invoice.id, InvoiceStatus.FAILED.toString())
+                InvoiceStatus.FAILED
             }
-        } catch (exception: Exception) {
-            when(exception) {
-                is CustomerNotFoundException, is CurrencyMismatchException -> {
-                    invoiceService.updateInvoice(invoice.id, InvoiceStatus.FAILED.toString())
-                } is NetworkException -> {
-                    // if paymentProvider throws a network error, we will keep the invoice as pending
-                    return invoice
-                } else -> {
-                    // catch any unhandled exceptions here
-                    throw exception
-                }
-            }
+        } catch (exception: CurrencyMismatchException) {
+            InvoiceStatus.FAILED
+        } catch (exception: CustomerNotFoundException) {
+            InvoiceStatus.FAILED
+        } catch (exception: NetworkException) {
+            InvoiceStatus.PENDING
         }
+
+        return invoiceService.updateInvoice(invoice.id, status.toString())
     }
 }

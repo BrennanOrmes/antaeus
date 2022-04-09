@@ -3,6 +3,7 @@ package io.pleo.antaeus.core.services
 import io.mockk.every
 import io.mockk.mockk
 import io.pleo.antaeus.core.exceptions.InvoiceNotFoundException
+import io.pleo.antaeus.data.AntaeusDal
 import io.pleo.antaeus.models.Currency
 import io.pleo.antaeus.models.Invoice
 import io.pleo.antaeus.models.InvoiceStatus
@@ -13,19 +14,13 @@ import java.math.BigDecimal
 
 class InvoiceServiceTest {
 
-//    private val dal = mockk<AntaeusDal> {
-//        every { fetchInvoice(404) } returns null
-//    }
+    private val dal = mockk<AntaeusDal> {
+        every { fetchInvoice(404) } returns null
+        every { fetchInvoices() } returns listOf()
+        every { updateInvoiceStatus(1, InvoiceStatus.PAID) } returns createInvoice(InvoiceStatus.PAID)
+    }
 
     private val pendingInvoice = createInvoice(InvoiceStatus.PENDING)
-
-    private val invoiceService = mockk<InvoiceService> {
-        every { fetch(404) }.throws(InvoiceNotFoundException(404))
-        // Had some difficulty figuring out expected return of list, listOf seems like cheating?
-        every { fetchAllByStatus(InvoiceStatus.PENDING.toString()) } returns listOf()
-        every { fetchAllByStatus("blah") }.throws(IllegalArgumentException())
-        every { updateInvoice(createInvoice(InvoiceStatus.PENDING).id, InvoiceStatus.PAID.toString()) } returns createInvoice(InvoiceStatus.PAID)
-    }
 
     private fun createInvoice(status: InvoiceStatus): Invoice {
         return Invoice(
@@ -35,6 +30,8 @@ class InvoiceServiceTest {
             status = status
         )
     }
+
+    private val invoiceService = InvoiceService(dal = dal)
 
     @Test
     fun `will throw if invoice is not found`() {
