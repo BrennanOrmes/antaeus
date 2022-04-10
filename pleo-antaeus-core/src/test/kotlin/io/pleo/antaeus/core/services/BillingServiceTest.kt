@@ -2,6 +2,7 @@ package io.pleo.antaeus.core.services
 
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.verify
 import io.pleo.antaeus.core.exceptions.CurrencyMismatchException
 import io.pleo.antaeus.core.exceptions.CustomerNotFoundException
 import io.pleo.antaeus.core.exceptions.InvoiceNotFoundException
@@ -109,5 +110,28 @@ class BillingServiceTest {
     fun `will set invoice status to PAID if enough funds`() {
         val updatedInvoice = billingService.chargeInvoice(invoice)
         assert(updatedInvoice.status == InvoiceStatus.PAID)
+    }
+
+    @Test
+    fun `will retry when still pending invoices`() {
+        val invoices = listOf(invoiceNetworkError)
+
+        every { invoiceService.fetchAllByStatus(InvoiceStatus.PENDING.toString()) } returns invoices
+        every { paymentProvider.charge(invoiceNetworkError)} throws NetworkException()
+        every { invoiceService.updateInvoice(
+            invoiceNetworkError.id,
+            any()
+        )} returns invoiceNetworkError
+
+        billingService.batch()
+
+        verify {
+            invoiceService.updateInvoice(invoiceNetworkError.id, InvoiceStatus.FAILED.toString())
+        }
+
+        // once on chargeInvoice, 3 times on retry
+        verify(exactly = 4) {
+            invoiceService.updateInvoice(invoiceNetworkError.id, InvoiceStatus.PENDING.toString())
+        }
     }
 }

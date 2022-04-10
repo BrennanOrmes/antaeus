@@ -14,13 +14,12 @@ import java.math.BigDecimal
 
 class InvoiceServiceTest {
 
+    private val pendingInvoice = createInvoice(InvoiceStatus.PENDING)
+
     private val dal = mockk<AntaeusDal> {
         every { fetchInvoice(404) } returns null
-        every { fetchInvoices() } returns listOf()
-        every { updateInvoiceStatus(1, InvoiceStatus.PAID) } returns createInvoice(InvoiceStatus.PAID)
+        every { fetchInvoices() } returns listOf(pendingInvoice)
     }
-
-    private val pendingInvoice = createInvoice(InvoiceStatus.PENDING)
 
     private fun createInvoice(status: InvoiceStatus): Invoice {
         return Invoice(
@@ -55,6 +54,7 @@ class InvoiceServiceTest {
 
     @Test
     fun `set invoice status to PAID`() {
+        every { dal.updateInvoiceStatus(1, InvoiceStatus.PAID) } returns createInvoice(InvoiceStatus.PAID)
         val updatedInvoice = invoiceService.updateInvoice(pendingInvoice.id, InvoiceStatus.PAID.toString())
         assert(updatedInvoice.status != pendingInvoice.status)
     }

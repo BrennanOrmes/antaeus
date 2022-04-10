@@ -16,7 +16,7 @@ class BillingService(
     /**
      * Charge invoice using [PaymentProvider]
      * @param invoice as [Invoice]
-     * @return returns updated invoice as [Invoice]
+     * @return updated invoice as [Invoice]
      * @throws IllegalArgumentException
      * @throws InvoiceNotFoundException
      */
@@ -36,5 +36,40 @@ class BillingService(
         }
 
         return invoiceService.updateInvoice(invoice.id, status.toString())
+    }
+
+    // method to be used for cron jobs
+    fun batch() {
+        var retry = 0
+        var invoices = invoiceService.fetchAllByStatus(InvoiceStatus.PENDING.toString())
+
+        while (hasPendingInvoices(invoices) && retry <= 3) {
+            retry += 1
+            invoices = chargeInvoices(invoices)
+        }
+
+        if (hasPendingInvoices(invoices)) {
+            // set them to failed in invoices
+            setPendingInvoicesToFailed(invoices)
+        }
+    }
+
+    private fun chargeInvoices(invoices: List<Invoice>): List<Invoice> {
+        val processedInvoices: MutableList<Invoice> = mutableListOf()
+        invoices.forEach {
+            processedInvoices.add(chargeInvoice(it))
+        }
+
+        return processedInvoices
+    }
+
+    private fun hasPendingInvoices(invoices: List<Invoice>): Boolean {
+        return invoices.any { it.status == InvoiceStatus.PENDING }
+    }
+
+    private fun setPendingInvoicesToFailed(invoices: List<Invoice>) {
+        invoices.forEach {
+            invoiceService.updateInvoice(it.id, InvoiceStatus.FAILED.toString())
+        }
     }
 }
