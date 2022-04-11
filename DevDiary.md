@@ -1,7 +1,6 @@
 ## Development Diary
 Development Diary - What is the purpose?
-This will outline my general thought process and day to day (or night to night) activity of the development process
-for this challenge.
+This will outline my general thought process and day to day activity of the development process for this challenge.
 
 ### Development
 
@@ -27,25 +26,18 @@ built in, which is very useful if you are building APIs with tools like swagger 
 The dashboard allows you to manually fire scheduled jobs and also queue them to be rescheduled if they have failed.
 
 #### Wednesday 6th of April (1 hour)
-From analyzing the challenge and code, some questions were raised:
+From analyzing the challenge and code, I made the following assumptions:
 
-1. What do we do if the currency in the DB does not match our current set of constants? Since the column is a string,
-this can allow some error, or potentially the entry could be null or empty. I would have to write some exception
-handling for this and add new invoice statuses to show if a currency error happened. I believe a new status
-would have to get added for failed invoices (potential failure with payment provider, card expired etc).
+1. Depending on where the service is located, it will go by that services timezone to fire at midnight
 
-2. Do we make the assumption that wherever the service is located, it will go by that services timezone to fire at
-midnight?
+2. The limit for retrying payments would be 3.
 
-3. What is the upper limit for retrying failed payments? 2 or 3?
-
-4. What do we do if a customers currency does not match the currency for the invoice? I noticed there was an
-exception for it. If that exception does happen, do we set the status to failed?
+3. We set the status of the invoice to failed if the customers currency does not match the currency of the invoice. This is feasible since there is an exception for it.
 
 I started to look into potential libraries to use that offer similar functionality to hangfire, and one potential
-candidate that I have found is JobRunr. JobRunr has its own dashboard that lets you see what jobs are running and
-which ones have failed, this might prove useful since right now I am not sure if I will build a front end to show
-a list of invoices.
+candidate that I have found is JobRunr. JobRunr has its own dashboard that lets you see what jobs are running and which 
+ones have failed, this might prove useful since right now I am not sure if I will build a front end to show a list of 
+invoices.
 
 I implemented a service method that takes a string then filters the results of the fetchAll by getting the Enum
 value of InvoiceStatus.
@@ -68,7 +60,7 @@ behaviour verification of my fetch by status method, since it would not let me r
 Will need to do some further reading on the MockK library.
 
 #### Saturday 9th of April (2 hours)
-Wrote unit tests for the billing service and then expanded the billing service to use the payment provider. I originally
+Wrote unit tests for the billing service and then expanded the service to use the payment provider. I originally
 developed the service to update the invoice with a different status depending on if the provider had succeeded or if 
 any exceptions were thrown, but my first implementation had many calls to the invoice service to update, and in my 
 opinion it did not read very well. I refactored the code to only make a call to the invoice service at the end, and pass
@@ -93,6 +85,7 @@ pending status.
 - Implement a failed job notification service that can notify customers of failed payments
 - Implement a job log service that writes logs from the batch method
 - Implement logging that can interface with azure application insights
+- Implement a generic service base class for CRUD operations to the database. (Not sure how feasible this is in kotlin)
 
 ### Summary
 
