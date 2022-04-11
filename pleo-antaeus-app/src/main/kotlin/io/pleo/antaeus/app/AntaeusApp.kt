@@ -21,6 +21,9 @@ import org.jetbrains.exposed.sql.StdOutSqlLogger
 import org.jetbrains.exposed.sql.addLogger
 import org.jetbrains.exposed.sql.transactions.TransactionManager
 import org.jetbrains.exposed.sql.transactions.transaction
+import org.jobrunr.configuration.JobRunr
+import org.jobrunr.server.BackgroundJobServerConfiguration.usingStandardBackgroundJobServerConfiguration
+import org.jobrunr.storage.InMemoryStorageProvider
 import setupInitialData
 import java.io.File
 import java.sql.Connection
@@ -69,4 +72,17 @@ fun main() {
         customerService = customerService,
         billingService = billingService
     ).run()
+
+
+    // Configure Jobrunr
+    val storageProvider = InMemoryStorageProvider()
+
+    val jobScheduler = JobRunr.configure()
+        .useStorageProvider(storageProvider)
+        .useBackgroundJobServer(usingStandardBackgroundJobServerConfiguration().andPollIntervalInSeconds(5))
+        .initialize()
+        .jobScheduler
+
+    val jobRunner = JobRunner(jobScheduler = jobScheduler)
+    jobRunner.enqueueBillingBatchJob()
 }
