@@ -5,8 +5,7 @@
 package io.pleo.antaeus.rest
 
 import io.javalin.Javalin
-import io.javalin.apibuilder.ApiBuilder.get
-import io.javalin.apibuilder.ApiBuilder.path
+import io.javalin.apibuilder.ApiBuilder.*
 import io.pleo.antaeus.core.exceptions.EntityNotFoundException
 import io.pleo.antaeus.core.services.BillingService
 import io.pleo.antaeus.core.services.CustomerService
@@ -88,7 +87,7 @@ class AntaeusRest(
 
                     path("billing") {
                         // URL: /rest/v1/billing/batch
-                        get("batch") {
+                        post("batch") {
                             billingService.batch()
                             it.status(200)
                         }
