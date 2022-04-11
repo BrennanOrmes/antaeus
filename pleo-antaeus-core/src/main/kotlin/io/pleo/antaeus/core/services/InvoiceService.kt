@@ -21,7 +21,7 @@ class InvoiceService(private val dal: AntaeusDal) {
     /**
      * Gets invoices by status
      * @param status the status to fetch as [String]
-     * @return returns filtered invoice as [List] of type [Invoice]
+     * @return filtered invoice as [List] of type [Invoice]
      * @throws IllegalArgumentException
      */
     fun fetchAllByStatus(status: String): List<Invoice> {
@@ -34,7 +34,7 @@ class InvoiceService(private val dal: AntaeusDal) {
      * Updates invoices status
      * @param invoiceId to be passed to [dal] as [Int]
      * @param status to be passed to [dal] as [String]
-     * @return returns invoice from [dal] as [Invoice]
+     * @return invoice from [dal] as [Invoice]
      * @throws InvoiceNotFoundException
      * @throws IllegalArgumentException
      */

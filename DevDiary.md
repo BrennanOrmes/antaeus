@@ -80,12 +80,23 @@ but it took some time as I had to read up on the mockk documentation to get a be
 
 #### Sunday 10th of April (2 hours)
 Wrote batch method that can be called by a cron job. The batch handles the retrying of pending jobs returned from the 
-charge invoices method. 
+charge invoices method. Unit tests for the cron job was interesting, as I was not sure how to test a void method.
+Reading into the mockk documentation, I learned that you can verify how many times a method was called, and that was 
+perfect for my scenario as I wanted to see if the retry would call the update method in the invoice service with a
+pending status.
 
 ### Improvements
-move batch to its own service, easier to test and means that only the batch service itself is exposed.
-move the mocked methods that define specific behaviour into their respective tests
-implement JWT authentication
-implement a failed job that could notify customers of failed payments
-implement a joblog service that writes logs from the batch method
-add application insights
+
+- Move the batch method to its own service, this would allow it to be easier to test, since you can mock the services it will use
+- Move the mocked methods that define specific behaviour into their respective tests
+- Implement JWT bearer authentication, as the REST right now does not have any authentication
+- Implement a failed job notification service that can notify customers of failed payments
+- Implement a job log service that writes logs from the batch method
+- Implement logging that can interface with azure application insights
+
+### Summary
+
+Overall, I have spent roughly 8 hours on this challenge. Most of the time spent was on learning kotlin and reading the 
+documentation. I personally really enjoyed learning about the mockk framework, as I currently have not had too much
+exposure to testing libraries. I really look forward to getting feedback on this challenge, especially on how I can
+improve the unit tests code coverage.

@@ -38,7 +38,13 @@ class BillingService(
         return invoiceService.updateInvoice(invoice.id, status.toString())
     }
 
-    // method to be used for cron jobs
+    /**
+     * Gets invoices and passes them to charge invoices
+     * Can be called as a cron job by kubernetes or AWS lambda
+     * @return [Unit]
+     * @throws IllegalArgumentException
+     * @throws InvoiceNotFoundException
+     */
     fun batch() {
         var retry = 0
         var invoices = invoiceService.fetchAllByStatus(InvoiceStatus.PENDING.toString())
@@ -54,6 +60,12 @@ class BillingService(
         }
     }
 
+    /**
+     * Passes list of invoices to be charged
+     * @return processed invoices as [List] of [Invoice]
+     * @throws IllegalArgumentException
+     * @throws InvoiceNotFoundException
+     */
     private fun chargeInvoices(invoices: List<Invoice>): List<Invoice> {
         val processedInvoices: MutableList<Invoice> = mutableListOf()
         invoices.forEach {
@@ -63,10 +75,20 @@ class BillingService(
         return processedInvoices
     }
 
+    /**
+     * Checks if any invoices are pending
+     * @return [Boolean]
+     */
     private fun hasPendingInvoices(invoices: List<Invoice>): Boolean {
         return invoices.any { it.status == InvoiceStatus.PENDING }
     }
 
+    /**
+     * Updates invoices with FAILED status
+     * @return [Unit]
+     * @throws IllegalArgumentException
+     * @throws InvoiceNotFoundException
+     */
     private fun setPendingInvoicesToFailed(invoices: List<Invoice>) {
         invoices.forEach {
             invoiceService.updateInvoice(it.id, InvoiceStatus.FAILED.toString())
