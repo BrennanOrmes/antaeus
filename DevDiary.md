@@ -71,11 +71,12 @@ itself that I was testing, not the services it was using. Thankfully I only had 
 but it took some time as I had to read up on the mockk documentation to get a better grasp on how the library works.
 
 #### Sunday 10th of April (2 hours)
-Wrote batch method that can be called by a cron job. The batch handles the retrying of pending jobs returned from the 
-charge invoices method. Unit tests for the cron job was interesting, as I was not sure how to test a void method.
-Reading into the mockk documentation, I learned that you can verify how many times a method was called, and that was 
-perfect for my scenario as I wanted to see if the retry would call the update method in the invoice service with a
-pending status.
+Wrote batch method that can be called by a cron job. The batch method is exposed over HTTP so external job scheduling 
+services can call it (Kubernetes or AWS Lambda).
+The batch handles the retrying of pending jobs returned from the charge invoices method. Unit tests for the cron job was 
+interesting, as I was not sure how to test a void method. Reading into the mockk documentation, I learned that you can 
+verify how many times a method was called, and that was perfect for my scenario as I wanted to see if the retry would 
+call the update method in the invoice service with a pending status.
 
 #### Monday 11th of April (1 hour)
 Spent some time implementing JobRunr. Things seemed to be going smoothly until I hit an error that JobRunr was 
