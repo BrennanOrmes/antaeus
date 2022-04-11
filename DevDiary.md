@@ -77,6 +77,10 @@ Reading into the mockk documentation, I learned that you can verify how many tim
 perfect for my scenario as I wanted to see if the retry would call the update method in the invoice service with a
 pending status.
 
+#### Monday 11th of April (1 hour)
+Spent some time implementing JobRunr. Things seemed to be going smoothly until I hit an error that JobRunr was 
+incompatible with the current version of kotlin. This is a shame, since it has support for recurring jobs scheduling.
+
 ### Improvements
 
 - Move the batch method to its own service, this would allow it to be easier to test, since you can mock the services it will use
