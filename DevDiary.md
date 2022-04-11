@@ -94,7 +94,7 @@ incompatible with the current version of kotlin. This is a shame, since it has s
 
 ### Summary
 
-Overall, I have spent roughly 8 hours on this challenge. Most of the time spent was on learning kotlin and reading the 
+Overall, I have spent roughly 9 hours on this challenge. Most of the time spent was on learning kotlin and reading the 
 documentation. I personally really enjoyed learning about the mockk framework, as I currently have not had too much
 exposure to testing libraries. I really look forward to getting feedback on this challenge, especially on how I can
 improve the unit tests code coverage.
